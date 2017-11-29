@@ -1,4 +1,5 @@
 const path = require('path');
+
 const SRC_DIR = path.join(__dirname, '/client/src');
 const DIST_DIR = path.join(__dirname, '/client/dist');
 
@@ -10,26 +11,30 @@ module.exports = {
   },
   module: {
     loaders: [
-      { test: [/\.js$/, /\.jsx$/],
+      {
+        test: [/\.js$/, /\.jsx$/],
         loader: 'babel-loader',
         exclude: /node_modules/,
         query: {
-          presets: ['es2015', 'react']
-        }
-      }, 
+          presets: ['es2015', 'react'],
+        },
+      },
       {
         test: /\.css$/,
-        loader: 'style-loader'
-      }, 
+        loader: 'style-loader',
+      },
       {
         test: /\.css$/,
         loader: 'css-loader',
         query: {
           modules: true,
-          localIdentName: '[name]__[local]___[hash:base64:5]'
-        }
+          localIdentName: '[name]__[local]___[hash:base64:5]',
+        },
       },
-      { test: /\.(png|woff|woff2|eot|ttf|svg)$/, loader: 'url-loader?limit=100000' }
-    ]
+      { test: /\.(png|woff|woff2|eot|ttf|svg)$/, loader: 'url-loader?limit=100000' },
+    ],
   },
-}
+  resolve: {
+    extensions: ['.js', '.jsx'],
+  },
+};
