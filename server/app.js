@@ -71,7 +71,7 @@ on what is inside each player object
 
 */
 
-const games = {};
+const games = new Map();
 
 /* =============================================================== */
 
@@ -93,22 +93,23 @@ io.on('connection', (socket) => {
 
   socket.on('join game', (data) => {
     socket.join(data.gameid);
-    if (!(data.gameid in games)) {
+    const game = games.get(data.gameid);
+    if (!game) {
       createPlayer(data, 'player1')
         .then((player1) => {
-          games[data.gameid] = {
+          games.set(data.gameid, {
             player1,
             player2: null,
             playerTurn: 'player1',
-          };
+          });
           io.to(socket.id).emit('player', player1);
         });
-    } else if (data.gameid in games && !games[data.gameid].player2) {
+    } else if (!game.player2) {
       createPlayer(data, 'player2')
         .then((player2) => {
-          games[data.gameid].player2 = player2;
+          game.player2 = player2;
           io.to(socket.id).emit('player', player2);
-          io.to(data.gameid).emit('ready', games[data.gameid]);
+          io.to(data.gameid).emit('ready', game);
         });
     } else {
       io.to(socket.id).emit('gamefull', 'this game is full!');
@@ -128,7 +129,7 @@ io.on('connection', (socket) => {
   */
 
   socket.on('attack', (data) => {
-    const game = games[data.gameid];
+    const game = games.get(data.gameid);
     const player = game.playerTurn;
     const opponent = game.playerTurn === 'player1' ? 'player2' : 'player1';
     const turnResults = damageCalculation(game[player], game[opponent]);
@@ -156,7 +157,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('switch', (data) => {
-    const game = games[data.gameid];
+    const game = games.get(data.gameid);
     const player = game.playerTurn;
     const opponent = game.playerTurn === 'player1' ? 'player2' : 'player1';
     game[player].pokemon.unshift(game[player].pokemon.splice(data.index, 1)[0]);

@@ -63,7 +63,7 @@ export default class Signup extends Component {
   }
 
   handlePasswordMatch(e) {
-    const password = this.state.password;
+    const { password } = this.state;
     const repeat = e.target.value;
 
     this.setState({
